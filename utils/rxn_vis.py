@@ -213,7 +213,7 @@ def visualize_reactions(reactions: list[str], headers: list[str] = None) -> Unio
 
         # Draw reaction label
         draw = ImageDraw.Draw(img)
-        font = ImageFont.truetype("LiberationSans-Regular.ttf", 12)
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 12)
          
         if headers: 
             draw.text((x_start, 5), headers[idx], fill=(0, 0, 0), font=font)
