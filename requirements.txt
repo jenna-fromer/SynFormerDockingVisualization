@@ -1,0 +1,9 @@
+rdkit
+numpy
+pandas
+matplotlib
+ipywidgets
+pillow
+prolif
+py3Dmol
+voila
