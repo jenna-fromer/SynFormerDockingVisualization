@@ -10,7 +10,7 @@ import MDAnalysis as mda
 import py3Dmol
 
 u = mda.Universe(
-    '../data/pli_pdbs/oe_protonated_MOR_endorphin_usedforDOCK.pdb')
+    'data/pli_pdbs/oe_protonated_MOR_endorphin_usedforDOCK.pdb')
 protein_mol = plf.Molecule.from_mda(u)
 
 HBHD_parameters = {
