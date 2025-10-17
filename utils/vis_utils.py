@@ -445,9 +445,19 @@ class MoleculeGridSelectorWithFilters:
             [self.no_guan_checkbox, widgets.Label("No guanidinium", width='500px', margin='0px 0 0 0px')], 
             layout=widgets.Layout(display="flex", flex_flow="row wrap", justify_content="flex-start")
         )
+        self.no_aminoimidazole_checkbox = widgets.Checkbox(
+            value=False,
+            indent=False,
+            layout=widgets.Layout(width='45px', justify_content="flex-end")
+        )
+        self.no_aminoimidazole_box = widgets.HBox(
+            [self.no_aminoimidazole_checkbox, widgets.Label("No 2-aminoimidazole", width='500px', margin='0px 0 0 0px')], 
+            layout=widgets.Layout(display="flex", flex_flow="row wrap", justify_content="flex-start")
+        )
         self.other_filters_row = widgets.HBox([
             widgets.Label("Other filters: "), 
             self.no_guan_box, 
+            self.no_aminoimidazole_box,
         ], layout=widgets.Layout(align_items="center"))
 
         # --- Sorting choice ---
@@ -542,13 +552,21 @@ class MoleculeGridSelectorWithFilters:
         Outputs:
             tuple[pd.DataFrame, pd.DataFrame]: (Original DataFrame, filtered copy).
         """
+        mols = [Chem.MolFromSmiles(smi) for smi in df['SMILES']]
+
         guanidine = Chem.MolFromSmarts('[N]~[C](~[N])~[N]')
         df['Contains guanidium'] = [
-            Chem.MolFromSmiles(smi).HasSubstructMatch(guanidine)
-            for smi in df['SMILES']
+            m.HasSubstructMatch(guanidine)
+            for m in mols
         ]
 
-        df['cLogP'] = [Crippen.MolLogP(Chem.MolFromSmiles(smi)) for smi in df.SMILES]
+        aminoimidazole = Chem.MolFromSmarts('[N]~[c](~[n])~[n]')
+        df['Contains 2-aminoimidazole'] = [
+            m.HasSubstructMatch(aminoimidazole)
+            for m in mols
+        ]
+
+        df['cLogP'] = [Crippen.MolLogP(m) for m in mols]
         
         df['Redocked'] = [
             f'data/redocked/call_{name}.sdf'
@@ -653,6 +671,9 @@ class MoleculeGridSelectorWithFilters:
         
         if self.no_guan_checkbox.value: 
             self.filtered_df = self.filtered_df.loc[self.filtered_df['Contains guanidium'] == False]
+
+        if self.no_aminoimidazole_checkbox.value: 
+            self.filtered_df = self.filtered_df.loc[self.filtered_df['Contains 2-aminoimidazole'] == False]
 
         # reset page 
         self.page = 0
